@@ -1,0 +1,93 @@
+import pygame
+
+
+pygame.init()
+clock = pygame.time.Clock()
+
+
+screen_width = 1024
+screen_height = 768
+screen = pygame.display.set_mode((screen_width, screen_height))
+
+
+class GameSprite(pygame.sprite.Sprite):
+    def __init__(self, picture, x,y, w,h,speed, hp):
+        super().__init__()
+        self.image = pygame.transform.scale(pygame.image.load(picture), (w,h))
+        self.rect = self.image.get_rect(topleft=(x,y))
+        self.speed = speed
+        self.hp = hp
+    
+    def draw(self):
+        screen.blit(self.image, self.rect)
+
+
+
+
+def play_music(path):
+    pygame.mixer.music.load(path)
+    pygame.mixer.music.play(-1)
+
+
+def show_menu():
+    play_music('music/menu.mp3')
+    menu = True
+    game = False
+    menu_img = pygame.transform.scale(pygame.image.load('img/,enu_screen.jpg')), (screen_width, screen_height)
+
+
+    font = pygame.font.SysFont('Comic Sans M5')
+
+
+    start = font.render("Пробел - начать игру", True, (255, 255, 255))
+    quit = fonr.render("Q - выход", True, (255, 255, 255))
+    
+
+    start_rect = start.get_rect(center=(screen_width/2, screen_height/2 - 50))
+    quit_rect = quit.get_rect(center=(screen_width/2, screen_height/2 + 50))
+
+
+
+
+    while menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    menu = False
+                    game = True
+                    elif event.key == pygame.K_q:
+                        pygame.quit()
+            
+
+            screen.blit(menu_img, (0, 0))
+            screen.blit(start, start_rect)
+            screen.blit(quit, quit_rect)
+            pyagem.display.flip()
+            clock.tick(30)
+        
+
+        if game:
+            game_run()
+
+
+
+
+def game_run():
+    bg = pygame.transform.scale(pygame.image.load('img/bg_game.jpg'), (screen_width, screen_height))
+    play_music('music/game_music.mp3')
+    hero = GameSprite('img/hero.png',0,0,100,100,3,100)
+
+
+    end = False
+    while not end:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                end = True
+        screen.blit(bg, (0, 0))
+        hero.draw()
+        pygame.display.flip()
+
+
+show_menu()
