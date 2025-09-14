@@ -1,55 +1,83 @@
-import pygame
-import sys
-from random import randint
-
-pygame.init()
-
-screen_width = 800
-screen_height = 600
-screen = pygame.display.set_mode((screen_width, screen_height))
-bg = pygame.transform.scale(pygame.image.load('bg.jpg'), (1100,900))
-bg_width, bg_height = bg.get_size()
+from telebot import TeleBot
+from random import choice
 
 
-pygame.display.set_caption('Платформер')
+TOKEN = '7508711454:AAEzY80BtaLZ_8vX-T0ydrz_qWQJqnyyNao'
+bot = TeleBot(TOKEN)
 
-pygame.mixer.music.load('music.mp3')
-pygame.mixer.music.play(-1)
-pygame.mixer.music.set_volume(0.1)
-
-
-
-y_speed = 0
-gravity = 0.5
-jump_strength = -10
-on_ground = True
+@bot.message_handler(commands=['start'])
+def start(message):
+    bot.send_message(message.chat.id, 'Привет!')
 
 
+if __name__ == '__main__':
+    bot.polling(none_stop=True)
 
 
-platforms = [(0, bg_height, bg_wodth, 10),
-             (600,700,100,10),
-             (700,800,100,10),
-             (400,700,100,10),
-             (300,600,100,10),
-             (200, 500, 100, 10),
-             (400, 400, 150, 10),
-             (220, 300, 70, 10),
-             (370,200,100,10),
-             (490,100,100,10)]
-player = pygame.transform,scale(pygame.image.load('cat.png'), (70,70))
-player_rect = player.get_rect()
-player_rect.x = 100
-player_rect.y = 150
+def func(arg_1,arg_2):
+    print(arg_1,arg_2)
+
+func(arg_1,arg_2)
 
 
-pizza = pygame.transform.scale(pygame.image.load('pizza.png'), (70,70))
-pizza_rect = pizza.get_rect()
-pizza_rect.x = 530
-pizza_rect.y = 30
+def func(arg_1,arg_2):
+    value = arg_1 + arg_2
+
+    return value
+print(func(3,4))
 
 
-mouse = pygame.transform.scale(pygame.image.load('mouse.png'), (70,70))
-mouses = []
-for _ in range(5):
+game_choice = ["камень", "ножницы", "бумага"]
+user_poinsts = 0
+comp_poinsts = 0
+
+@bot.message_handler(func=lambda x: x.text.lower() in game_choice)
+def game(message):
+    global user_poinsts
+    global comp_poinsts
+    user_choice = message.text.lower()
+    bot_choice = choice(game_choice)
+    bot.send_message(message.chat.id, bot_choice)
+    if user_choice == "камень" and bot_choice == "ножницы":
+        msg = 'Победа'
+        user_poinsts += 1
+    elif user_choice == "бумага" and bot_choice == "камень":
+        msg = 'Победа'
+        user_poinsts += 1
+    else:
+        msg = "Ты проиграл"
+        comp_poinsts += 1
+    bot.send_message(message.chat.id, msg)
+
+
+@bot.message_handler(commands=['poinsts'])
+def points(message):
+    bot.send_message(message.chat.id, f"бот: {comp_poinsts} игрок: {user_poinsts}")
+
+
+@bot.message_handler(commands=['reset'])
+def reset(message):
+    global user_poinsts
+    global comp_poinsts
+    user_poinsts = 0
+    comp_poinsts = 0
+    bot.send_message(message.chat.id, "Очки сброшены")
+
+
+class Game:
+    comp = 0
+    user = 0
     
+    def update(self, user_winner):
+        if user_winner:
+            self.user += 1
+            return 'Победил'
+        self.comp += 1
+        return 'Проиграл'
+    
+    def reset(self):
+        self.comp = 0
+        self.user = 0
+        img = open('game.png', 'rb')
+        bot,send_photo(message.chat.id, img)
+        img.close()
